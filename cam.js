@@ -70,18 +70,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 function initializeCamera() {
-    navigator.getUserMedia = navigator.getUserMedia ||
-        navigator.webkitGetUserMedia ||
-        navigator.mozGetUserMedia ||
-        navigator.msGetUserMedia;
+    // navigator.getUserMedia = navigator.getUserMedia ||
+    //     navigator.webkitGetUserMedia ||
+    //     navigator.mozGetUserMedia ||
+    //     navigator.msGetUserMedia;
 
-    var video = document.querySelector('#v');
+    // var video = document.querySelector('#v');
 
-    if (navigator.getUserMedia) {
-        navigator.getUserMedia({ audio: true, video: true }, function (stream) {
-            video.src = window.URL.createObjectURL(stream);
-        }, errorCallback);
-    } else {
-        video.src = 'somevideo.webm'; // fallback.
-    }
+    // if (navigator.getUserMedia) {
+    //     navigator.getUserMedia({ audio: true, video: true }, function (stream) {
+    //         video.src = window.URL.createObjectURL(stream);
+    //     }, errorCallback);
+    // } else {
+    //     video.src = 'somevideo.webm'; // fallback.
+    // }
+    // Grab elements, create settings, etc.
+var video = document.getElementById('v');
+
+// Get access to the camera!
+if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    // Not adding `{ audio: true }` since we only want video now
+    navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+        video.src = window.URL.createObjectURL(stream);
+        video.play();
+    });
+}
 }
