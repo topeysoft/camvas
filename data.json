@@ -1,0 +1,33 @@
+{
+    "encompassGuid": "C0B9D125-C38F-4DEC-8FB5-555D93650C08",
+    "status": "approved",
+    "stips": [
+        {
+            "stipId": 14,
+            "vuplusTaskId": 12392312,
+            "dueDate": "22-10-2017",
+            "answers": [
+                {
+                    "questionId": 10,
+                    "answer": "September 15, 2015"
+                },
+                {
+                    "questionId": 11,
+                    "answer": "Bank of America Savings Account"
+                },
+                {
+                    "questionId": 13,
+                    "answer": 5552
+                },
+                {
+                    "questionId": "14",
+                    "answer": "$10,000.95"
+                },
+                {
+                    "questionId": "12",
+                    "answer": "$22,252.01"
+                }
+            ]
+        }
+    ]
+}

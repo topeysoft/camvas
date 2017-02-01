@@ -1,0 +1,43 @@
+<html>
+
+<head>
+    <title>HTML5 Camera API using the power of canvas</title>
+    <style>
+    canvas{
+        display: block;
+        min-width: 20rem;
+        min-height: 15rem;
+        width:100%;
+    }
+    #v{
+        display: none;
+        width: 100%;
+    }
+    </style>
+</head>
+
+<body>
+    <h5>Testing Camera API</h5>
+    <canvas id="cam_vas"></canvas>
+    <!--<img  src="./images.jpg" id="img" />-->
+    <!--<video id="v" autoplay="autoplay"></video>-->
+
+    <video id="v" controls loop autoplay="autoplay">
+    <source src="http://www.w3schools.com/html/movie.mp4" type="video/mp4">
+  <source src="http://www.w3schools.com/html/movie.ogg" type="video/ogg">
+Your browser does not support the video tag.
+</video>
+    <script src="./filters.js"></script>
+    <script src="./cam.js"></script>
+    <script>
+   
+    // } else {
+    //     alert('getUserMedia() is not supported in your browser');
+    // }
+
+
+
+</script>
+</body>
+
+</html>
