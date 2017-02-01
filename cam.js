@@ -85,14 +85,60 @@ function initializeCamera() {
     //     video.src = 'somevideo.webm'; // fallback.
     // }
     // Grab elements, create settings, etc.
-var video = document.getElementById('v');
+    var video = document.getElementById('v');
+    console.log("MEDIA DEVICES: ", navigator.mediaDevices);
 
-// Get access to the camera!
-if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    // Not adding `{ audio: true }` since we only want video now
-    navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
-        video.src = window.URL.createObjectURL(stream);
-        video.play();
+    navigator.mediaDevices.enumerateDevices().then(function (data) {
+        console.log("DEVICES: ", data);
+
     });
+    // Get access to the camera!
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        // Not adding `{ audio: true }` since we only want video now
+        navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
+            video.src = window.URL.createObjectURL(stream);
+            video.play();
+        });
+    }
+
+
 }
+
+function getDevices() {
+     navigator.mediaDevices.enumerateDevices().then(function (sourceInfos) {
+        var audioSource = null;
+        var videoSource = null;
+
+        for (var i = 0; i != sourceInfos.length; ++i) {
+            var sourceInfo = sourceInfos[i];
+            if (sourceInfo.kind === 'audio') {
+                console.log(sourceInfo.id, sourceInfo.label || 'microphone');
+
+                audioSource = sourceInfo.id;
+            } else if (sourceInfo.kind === 'video') {
+                console.log(sourceInfo.id, sourceInfo.label || 'camera');
+
+                videoSource = sourceInfo.id;
+            } else {
+                console.log('Some other kind of source: ', sourceInfo);
+            }
+        }
+
+        sourceSelected(audioSource, videoSource);
+    });
+
+    function sourceSelected(audioSource, videoSource) {
+        var constraints = {
+            audio: {
+                optional: [{ sourceId: audioSource }]
+            },
+            video: {
+                optional: [{ sourceId: videoSource }]
+            }
+        };
+
+        navigator.mediaDevices.getUserMedia();
+    }
 }
+
+
