@@ -21,10 +21,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // }
 
     var text = "Place check withing the box";
-   // var filters = new Filters();
+    // var filters = new Filters();
     function draw(v, c, w, h) {
         if (!v.paused || !v.ended) {
-         //var img=  Filters.filterImage('grayscale', v, {});
+            //var img=  Filters.filterImage('grayscale', v, {});
             c.drawImage(v, 0, 0, w, h);
         }
         drawBox(c, w, h);
@@ -59,13 +59,29 @@ document.addEventListener('DOMContentLoaded', function () {
         // gradient.addColorStop("1.0", "red");
         // // Fill with gradient
         ctx.fillStyle = "white";
-        ctx.textAlign="center";
+        ctx.textAlign = "center";
         ctx.textBaseline = 'middle';
-        ctx.fillText(text, width/2, height/2);
+        ctx.fillText(text, width / 2, height / 2);
     }
 
 
+    initializeCamera();
 }, false);
 
 
+function initializeCamera() {
+    navigator.getUserMedia = navigator.getUserMedia ||
+        navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia ||
+        navigator.msGetUserMedia;
 
+    var video = document.querySelector('#v');
+
+    if (navigator.getUserMedia) {
+        navigator.getUserMedia({ audio: true, video: true }, function (stream) {
+            video.src = window.URL.createObjectURL(stream);
+        }, errorCallback);
+    } else {
+        video.src = 'somevideo.webm'; // fallback.
+    }
+}
