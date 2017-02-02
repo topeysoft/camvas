@@ -179,8 +179,8 @@ function getDefaultSource(sources){
                 optional:[ {sourceId:videoSource.deviceId }]
             }; 
         }
-        console.debug("VIDEO SRC", navigator.mediaDevices.videoSource); //.getUserMedia(constraints); 
-        navigator.mediaDevices.videoSource; //.getUserMedia(constraints); 
+        //console.debug("VIDEO SRC", navigator.mediaDevices.videoSource); //.getUserMedia(constraints); 
+        navigator.mediaDevices.getUserMedia(constraints); 
     }
 
 
