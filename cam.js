@@ -85,30 +85,22 @@ function initializeCamera() {
 
     // var video = document.querySelector('#v');
 
-    // if (navigator.getUserMedia) {
-    //     navigator.getUserMedia({ audio: true, video: true }, function (stream) {
-    //         video.src = window.URL.createObjectURL(stream);
-    //     }, errorCallback);
-    // } else {
-    //     video.src = 'somevideo.webm'; // fallback.
-    // }
-    // Grab elements, create settings, etc.
-    var video = document.getElementById('v'); 
-    
-
-
     // Get access to the camera!
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         // Not adding `{ audio: true }` since we only want video now
-        navigator.mediaDevices.getUserMedia( {video:true }).then(function (stream) {
-            video.src = window.URL.createObjectURL(stream); 
-            video.play(); 
-        }); 
+        startStream({video:true });
     }
 
 
 }
 
+function startStream(constraints){
+    var video = document.getElementById('v');     
+    navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
+            video.src = window.URL.createObjectURL(stream); 
+            video.play(); 
+        }); 
+}
 function getDevices() {
 
     navigator.mediaDevices.enumerateDevices().then(function (sourceInfos) {
@@ -164,7 +156,6 @@ function getDefaultSource(sources){
         return sources; 
     }
     function sourcesSelected(sources) {
-        console.log("SOURCES", sources);
         var videoSource = sources.videoSource; 
         var audioSource = sources.audioSource; 
 
@@ -179,8 +170,9 @@ function getDefaultSource(sources){
                 optional:[ {sourceId:videoSource.deviceId }]
             }; 
         }
+        startStream(constraints);
         //console.debug("VIDEO SRC", navigator.mediaDevices.videoSource); //.getUserMedia(constraints); 
-        navigator.mediaDevices.getUserMedia(constraints); 
+        //navigator.mediaDevices.getUserMedia(constraints); 
     }
 
 
