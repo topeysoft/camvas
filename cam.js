@@ -1,10 +1,17 @@
-document.addEventListener('DOMContentLoaded', function () {
+var audioSources = []; 
+        var videoSources = []; 
+        var selectedVideoSource = {}; 
+        var defaultVideoSource = {}; 
+        var selectedAudioSource = {}; 
+        var defaultAudioSource = {}; 
+        
+        document.addEventListener('DOMContentLoaded', function () {
 
 
 
-    var v = document.getElementById('v');
-    var canvas = document.getElementById('cam_vas');
-    var context = canvas.getContext('2d');
+    var v = document.getElementById('v'); 
+    var canvas = document.getElementById('cam_vas'); 
+    var context = canvas.getContext('2d'); 
     //v.onload = function () {
 
     //draw(v, context, cw, ch);
@@ -12,35 +19,35 @@ document.addEventListener('DOMContentLoaded', function () {
         // canvas.width = v.width;
         // canvas.height = v.height;
 
-        var cw = canvas.clientWidth;
-        var ch = canvas.clientHeight;
-        canvas.width = cw;
-        canvas.height = ch;
-        draw(this, context, cw, ch);
-    }, false);
+        var cw = canvas.clientWidth; 
+        var ch = canvas.clientHeight; 
+        canvas.width = cw; 
+        canvas.height = ch; 
+        draw(this, context, cw, ch); 
+    }, false); 
     // }
 
-    var text = "Place check withing the box";
+    var text = "Place check withing the box"; 
     // var filters = new Filters();
     function draw(v, c, w, h) {
-        if (!v.paused || !v.ended) {
+        if ( ! v.paused ||  ! v.ended) {
             //var img=  Filters.filterImage('grayscale', v, {});
-            c.drawImage(v, 0, 0, w, h);
+            c.drawImage(v, 0, 0, w, h); 
         }
-        drawBox(c, w, h);
-        drawText(c, text, w, h);
-        setTimeout(draw, 20, v, c, w, h);
+        drawBox(c, w, h); 
+        drawText(c, text, w, h); 
+        setTimeout(draw, 20, v, c, w, h); 
     }
 
 
     function drawBox(ctx, width, height) {
-        var pad = 30;
-        var rectWidth = 4;
-        ctx.beginPath();
-        ctx.lineWidth = rectWidth;
-        ctx.strokeStyle = "green";
-        ctx.rect(pad, pad, width - (2 * pad) - (rectWidth * 2), height - (2 * pad) - (rectWidth * 2));
-        ctx.stroke();
+        var pad = 30; 
+        var rectWidth = 4; 
+        ctx.beginPath(); 
+        ctx.lineWidth = rectWidth; 
+        ctx.strokeStyle = "green"; 
+        ctx.rect(pad, pad, width - (2 * pad) - (rectWidth * 2), height - (2 * pad) - (rectWidth * 2)); 
+        ctx.stroke(); 
     }
     function drawText(ctx, text, width, height) {
         // var pad = 30;
@@ -51,26 +58,26 @@ document.addEventListener('DOMContentLoaded', function () {
         // ctx.rect(pad, pad, width - (2 * pad) - (rectWidth * 2), height - (2 * pad) - (rectWidth * 2));
         // ctx.stroke();
 
-        ctx.font = "1rem Verdana";
+        ctx.font = "1rem Verdana"; 
         // Create gradient
         // var gradient = ctx.createLinearGradient(0, 0, width, height);
         // gradient.addColorStop("0", "magenta");
         // gradient.addColorStop("0.5", "blue");
         // gradient.addColorStop("1.0", "red");
         // // Fill with gradient
-        ctx.fillStyle = "white";
-        ctx.textAlign = "center";
-        ctx.textBaseline = 'middle';
-        ctx.fillText(text, width / 2, height / 2);
+        ctx.fillStyle = "white"; 
+        ctx.textAlign = "center"; 
+        ctx.textBaseline = 'middle'; 
+        ctx.fillText(text, width / 2, height / 2); 
     }
 
 
-    initializeCamera();
-}, false);
+    initializeCamera(); 
+}, false); 
 
 
 function initializeCamera() {
-    getDevices();
+   getDevices(); 
     // navigator.getUserMedia = navigator.getUserMedia ||
     //     navigator.webkitGetUserMedia ||
     //     navigator.mozGetUserMedia ||
@@ -86,20 +93,17 @@ function initializeCamera() {
     //     video.src = 'somevideo.webm'; // fallback.
     // }
     // Grab elements, create settings, etc.
-    var video = document.getElementById('v');
-    // console.log("MEDIA DEVICES: ", navigator.mediaDevices);
+    var video = document.getElementById('v'); 
+    
 
-    // navigator.mediaDevices.enumerateDevices().then(function (data) {
-    //     console.log("DEVICES: ", data);
 
-    // });
     // Get access to the camera!
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         // Not adding `{ audio: true }` since we only want video now
-        navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
-            video.src = window.URL.createObjectURL(stream);
-            video.play();
-        });
+        navigator.mediaDevices.getUserMedia( {video:true }).then(function (stream) {
+            video.src = window.URL.createObjectURL(stream); 
+            video.play(); 
+        }); 
     }
 
 
@@ -108,98 +112,135 @@ function initializeCamera() {
 function getDevices() {
 
     navigator.mediaDevices.enumerateDevices().then(function (sourceInfos) {
-        var audioSources = [];
-        var videoSources = [];
-
-        for (var i = 0; i != sourceInfos.length; ++i) {
-            try {
-                var sourceInfo = sourceInfos[i];
+        
+        console.debug("DEVICES", sourceInfos); 
+        sourceInfos.forEach(function (sourceInfo) {
+           try {
                 if (sourceInfo.kind === 'audioinput') {
-                    audioSources.push({ sourceInfo: sourceInfo });
-                } else if (sourceInfo.kind === 'videoinput') {
+                    audioSources.push( {sourceInfo:sourceInfo }); 
+                }else if (sourceInfo.kind === 'videoinput') {
 
-                    videoSource.push({ sourceInfo: sourceInfo });
-                } else {
+                    videoSources.push( {sourceInfo:sourceInfo }); 
+                }else {
                     try {
-                    } catch (e) { console.log('Error occured: ', e); }
+                    }catch (e) {console.log('Error occured: ', e); }
                 }
 
 
-            } catch (e) { console.log('Error occured: ', e); }
-        }
+            }catch (e) {console.log('Error occured: ', e); }
+            defaultAudioSource = getDefaultSource(audioSources);
+            defaultVideoSource = getDefaultSource(videoSources);
+            
+        }); 
+      
+        
+       // videoSources = filterDefault(videoSources); 
+       // audioSources = filterDefault(audioSources); 
+        initializeVideoDeviceList(videoSources); 
+    }); 
+}
 
-        videoSources = filterDefault(videoSources);
-        audioSources = filterDefault(audioSources);
-        initializeVideoDeviceList(audioSources);
-        // sourceSelected(audioSource, videoSource);
-    });
 
+function getDefaultSource(sources){
+   return sources.find(function (s) {
+            return s.sourceInfo.label.toLowerCase() == "default"; 
+        }) ||  {}
+}
     function filterDefault(sources) {
-        var defaultSource = sources.find(function (s) {
-            return s.sourceInfo.label.toLowerCase() == "default";
-        });
+        var defaultSource = getDefaultSource(sources); 
         sources = sources.filter(function (s, i) {
             if (s.sourceInfo.label.toLowerCase() == "default") {
-                return false;
-            } else {
-                if (s.sourceInfo.groupId == defaultSource.sourceInfo.groupId) {
-                    s.isDefault = true;
+                return false; 
+            }else {
+                try {
+                    if (s.sourceInfo.groupId == defaultSource.sourceInfo.groupId) {
+                    s.isDefault = true; 
                 }
 
-                return true;
+                }catch (e) {}
+                return true; 
             }
-        });
-        return sources;
+        }); 
+        return sources; 
     }
     function sourcesSelected(sources) {
-        var videoSource = sources.videoSource;
-        var audioSource = sources.audioSource;
+        console.log("SOURCES", sources);
+        var videoSource = sources.videoSource; 
+        var audioSource = sources.audioSource; 
 
-        var constraints = {};
+        var constraints =  {}; 
         if (audioSource) {
-            constraints.audio = {
-                optional: [{ sourceId: audioSource.deviceId }]
-            };
+            constraints.audio =  {
+                optional:[ {sourceId:audioSource.deviceId }]
+            }; 
         }
         if (videoSource) {
-            constraints.video = {
-                optional: [{ sourceId: videoSource.deviceId }]
-            };
+            constraints.video =  {
+                optional:[ {sourceId:videoSource.deviceId }]
+            }; 
         }
-        navigator.mediaDevices.getUserMedia(constraints);
+        console.debug("VIDEO SRC", navigator.mediaDevices.videoSource); //.getUserMedia(constraints); 
+        navigator.mediaDevices.videoSource; //.getUserMedia(constraints); 
     }
 
 
     function addListItem(parentUl, classList, text, data) {
-        var node = document.createElement('li');
-        classList.forEach(function(c) {
-            node.classList.add(c);
+        var node = document.createElement('li'); 
+        classList.forEach(function (c) {
+            node.classList.add(c); 
         }); 
-        node.innerHTML = text;
-        parentUl.appendChild(node);
+        node.innerHTML = text; 
+        node.dataset.itemData = data; 
+        parentUl.appendChild(node); 
+        return node; 
     }
 
     function initializeVideoDeviceList(sources) {
-        var camSourceSelector = document.getElementById('cam-sources');
-        camSourceSelector.innerHTML = "";
-        var node = document.createElement('li');
-        node.classList.add('list-header');
-        node.innerText = 'Select source';
-        camSourceSelector.appendChild(node);
-        console.log('Sources: ', sources);
+        var camSourceSelector = document.getElementById('cam-sources'); 
+        bindEvent(camSourceSelector, 'click', '.video-source-select-item', function(e) {
+            selectedVideoSource=videoSources[e.srcElement.dataset.itemData].source;
+            var sources =  {
+                videoSource:selectedVideoSource,
+                audioSource:selectedAudioSource
+                }
+          sourcesSelected(sources); 
+        })
+        camSourceSelector.innerHTML = ""; 
+        var node = document.createElement('li'); 
+        node.classList.add('list-header'); 
+        node.innerText = 'Select source'; 
+        camSourceSelector.appendChild(node); 
         sources.forEach(function (s, index) {
-            var source = s.sourceInfo;
-            var text = '';
-            var classes = ['active-effect'];
+            var source = s.sourceInfo; 
+            var text = ''; 
+            var classes = ['active-effect', 'video-source-select-item']; 
             if (s.isDefault) {
-               // text =  '<span class="bubble">★</span>';
-                classes.push('active');
+                classes.push('active'); 
             }
-            text += source.label;
-            addListItem(camSourceSelector, classes, text, source);
-        });
+            text += source.label; 
+           var node = addListItem(camSourceSelector, classes, text, index); 
+        }); 
 
     }
+
+function isDescendant(parent, child) {
+    var node = child.parentNode; 
+    while (node != null) {
+        if (node == parent) {
+            return true; 
+        }
+        node = node.parentNode; 
+    }
+    return false; 
 }
 
-
+function bindEvent(parent, event, selector, callback) {
+    parent.addEventListener(event, function(e) {
+           var target = parent.querySelector(selector); 
+            if (isDescendant(parent, e.srcElement)) {
+                if (e.srcElement == target) {
+                    callback(e); 
+                }
+            }
+        }); 
+}
