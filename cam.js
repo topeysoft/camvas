@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 function initializeCamera() {
+    getDevices();
     // navigator.getUserMedia = navigator.getUserMedia ||
     //     navigator.webkitGetUserMedia ||
     //     navigator.mozGetUserMedia ||
@@ -86,12 +87,12 @@ function initializeCamera() {
     // }
     // Grab elements, create settings, etc.
     var video = document.getElementById('v');
-    console.log("MEDIA DEVICES: ", navigator.mediaDevices);
+    // console.log("MEDIA DEVICES: ", navigator.mediaDevices);
 
-    navigator.mediaDevices.enumerateDevices().then(function (data) {
-        console.log("DEVICES: ", data);
+    // navigator.mediaDevices.enumerateDevices().then(function (data) {
+    //     console.log("DEVICES: ", data);
 
-    });
+    // });
     // Get access to the camera!
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         // Not adding `{ audio: true }` since we only want video now
@@ -105,39 +106,99 @@ function initializeCamera() {
 }
 
 function getDevices() {
-     navigator.mediaDevices.enumerateDevices().then(function (sourceInfos) {
-        var audioSource = null;
-        var videoSource = null;
+
+    navigator.mediaDevices.enumerateDevices().then(function (sourceInfos) {
+        var audioSources = [];
+        var videoSources = [];
 
         for (var i = 0; i != sourceInfos.length; ++i) {
-            var sourceInfo = sourceInfos[i];
-            if (sourceInfo.kind === 'audio') {
-                console.log(sourceInfo.id, sourceInfo.label || 'microphone');
+            try {
+                var sourceInfo = sourceInfos[i];
+                if (sourceInfo.kind === 'audioinput') {
+                    audioSources.push({ sourceInfo: sourceInfo });
+                } else if (sourceInfo.kind === 'videoinput') {
 
-                audioSource = sourceInfo.id;
-            } else if (sourceInfo.kind === 'video') {
-                console.log(sourceInfo.id, sourceInfo.label || 'camera');
+                    videoSource.push({ sourceInfo: sourceInfo });
+                } else {
+                    try {
+                    } catch (e) { console.log('Error occured: ', e); }
+                }
 
-                videoSource = sourceInfo.id;
-            } else {
-                console.log('Some other kind of source: ', sourceInfo);
-            }
+
+            } catch (e) { console.log('Error occured: ', e); }
         }
 
-        sourceSelected(audioSource, videoSource);
+        videoSources = filterDefault(videoSources);
+        audioSources = filterDefault(audioSources);
+        initializeVideoDeviceList(audioSources);
+        // sourceSelected(audioSource, videoSource);
     });
 
-    function sourceSelected(audioSource, videoSource) {
-        var constraints = {
-            audio: {
-                optional: [{ sourceId: audioSource }]
-            },
-            video: {
-                optional: [{ sourceId: videoSource }]
-            }
-        };
+    function filterDefault(sources) {
+        var defaultSource = sources.find(function (s) {
+            return s.sourceInfo.label.toLowerCase() == "default";
+        });
+        sources = sources.filter(function (s, i) {
+            if (s.sourceInfo.label.toLowerCase() == "default") {
+                return false;
+            } else {
+                if (s.sourceInfo.groupId == defaultSource.sourceInfo.groupId) {
+                    s.isDefault = true;
+                }
 
-        navigator.mediaDevices.getUserMedia();
+                return true;
+            }
+        });
+        return sources;
+    }
+    function sourcesSelected(sources) {
+        var videoSource = sources.videoSource;
+        var audioSource = sources.audioSource;
+
+        var constraints = {};
+        if (audioSource) {
+            constraints.audio = {
+                optional: [{ sourceId: audioSource.deviceId }]
+            };
+        }
+        if (videoSource) {
+            constraints.video = {
+                optional: [{ sourceId: videoSource.deviceId }]
+            };
+        }
+        navigator.mediaDevices.getUserMedia(constraints);
+    }
+
+
+    function addListItem(parentUl, classList, text, data) {
+        var node = document.createElement('li');
+        classList.forEach(function(c) {
+            node.classList.add(c);
+        }); 
+        node.innerHTML = text;
+        parentUl.appendChild(node);
+    }
+
+    function initializeVideoDeviceList(sources) {
+        var camSourceSelector = document.getElementById('cam-sources');
+        camSourceSelector.innerHTML = "";
+        var node = document.createElement('li');
+        node.classList.add('list-header');
+        node.innerText = 'Select source';
+        camSourceSelector.appendChild(node);
+        console.log('Sources: ', sources);
+        sources.forEach(function (s, index) {
+            var source = s.sourceInfo;
+            var text = '';
+            var classes = ['active-effect'];
+            if (s.isDefault) {
+               // text =  '<span class="bubble">★</span>';
+                classes.push('active');
+            }
+            text += source.label;
+            addListItem(camSourceSelector, classes, text, source);
+        });
+
     }
 }
 
