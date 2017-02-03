@@ -11,10 +11,10 @@ var audioSources = [];
     var screen = document.getElementById('screen'); 
     var context = canvas.getContext('2d'); 
  
- document.body.addEventListener('click', function(){
-     requestFullScreen(screen);
-     console.log("Going full screen");
- })
+//  document.body.addEventListener('click', function(){
+//      requestFullScreen(screen);
+//      console.log("Going full screen");
+//  })
 
 
     //v.onload = function () {
@@ -249,8 +249,8 @@ function bindEvent(parent, event, selector, callback) {
            var target = parent.querySelector(selector); 
             if (isDescendant(parent, e.srcElement)) {
                 if (e.srcElement == target) {
-                    callback(e); 
-                    alert("HEY");
+                    // callback(e); 
+                    // alert("HEY");
                 }
             }
         }); 
