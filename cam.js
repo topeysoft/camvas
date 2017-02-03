@@ -6,12 +6,17 @@ var audioSources = [];
         var defaultAudioSource = {}; 
         
         document.addEventListener('DOMContentLoaded', function () {
-
-
-
     var v = document.getElementById('v'); 
     var canvas = document.getElementById('cam_vas'); 
+    var screen = document.getElementById('screen'); 
     var context = canvas.getContext('2d'); 
+ 
+ document.body.addEventListener('click', function(){
+     requestFullScreen(screen);
+     console.log("Going full screen");
+ })
+
+
     //v.onload = function () {
 
     //draw(v, context, cw, ch);
@@ -162,14 +167,17 @@ function getDefaultSource(sources){
         var constraints =  {}; 
         if (audioSource) {
             constraints.audio =  {
-                optional:[ {sourceId:audioSource.deviceId }]
+                optional: {sourceId:audioSource.deviceId }
             }; 
+        }else{
+            constraints.audio=false;
         }
         if (videoSource) {
             constraints.video =  {
-                optional:[ {sourceId:videoSource.deviceId }]
+                mandatory:{sourceId:videoSource.deviceId }
             }; 
         }
+        console.log(constraints);
         startStream(constraints);
         //console.debug("VIDEO SRC", navigator.mediaDevices.videoSource); //.getUserMedia(constraints); 
         //navigator.mediaDevices.getUserMedia(constraints); 
@@ -189,14 +197,15 @@ function getDefaultSource(sources){
 
     function initializeVideoDeviceList(sources) {
         var camSourceSelector = document.getElementById('cam-sources'); 
-        bindEvent(camSourceSelector, 'click', '.video-source-select-item', function(e) {
-            selectedVideoSource=videoSources[e.srcElement.dataset.itemData].source;
-            var sources =  {
-                videoSource:selectedVideoSource,
-                audioSource:selectedAudioSource
-                }
-          sourcesSelected(sources); 
-        })
+        // bindEvent(camSourceSelector, 'click', '.video-source-select-item', function(e) {
+        //     console.log("SRCS", videoSources);
+        //     selectedVideoSource=videoSources[e.srcElement.dataset.itemData].sourceInfo;
+        //     var sources =  {
+        //         videoSource:selectedVideoSource,
+        //         audioSource: false//selectedAudioSource
+        //         };
+        //   sourcesSelected(sources); 
+        // })
         camSourceSelector.innerHTML = ""; 
         var node = document.createElement('li'); 
         node.classList.add('list-header'); 
@@ -211,8 +220,17 @@ function getDefaultSource(sources){
             }
             text += source.label; 
            var node = addListItem(camSourceSelector, classes, text, index); 
+        node.addEventListener('click', function(e) {
+            console.log("SRCS", videoSources);
+            selectedVideoSource=videoSources[e.srcElement.dataset.itemData].sourceInfo;
+            var sources =  {
+                videoSource:selectedVideoSource,
+                audioSource: false//selectedAudioSource
+                };
+          sourcesSelected(sources); 
         }); 
 
+    });
     }
 
 function isDescendant(parent, child) {
@@ -232,7 +250,23 @@ function bindEvent(parent, event, selector, callback) {
             if (isDescendant(parent, e.srcElement)) {
                 if (e.srcElement == target) {
                     callback(e); 
+                    alert("HEY");
                 }
             }
         }); 
+}
+
+
+function requestFullScreen(element) {
+    // Supports most browsers and their versions.
+    var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
+
+    if (requestMethod) { // Native full screen.
+        requestMethod.call(element);
+    } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
+        var wscript = new ActiveXObject("WScript.Shell");
+        if (wscript !== null) {
+            wscript.SendKeys("{F11}");
+        }
+    }
 }
